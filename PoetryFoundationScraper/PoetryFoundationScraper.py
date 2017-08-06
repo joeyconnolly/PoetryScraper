@@ -22,7 +22,7 @@ def get_poems(page):
             poem_title = poem_title_tag.text.strip()
 
             # remove all annotations
-            annotations = poem_soup.find_all('span', id=re.compile('annotation\-\d\-text'))
+            annotations = poem_soup.find_all('span', id=re.compile('annotation-\d-text'))
             for div in annotations:
                 div.decompose()
 
