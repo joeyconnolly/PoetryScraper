@@ -3,43 +3,46 @@
 from bs4 import BeautifulSoup
 import re
 import urllib.request
-from html.parser import HTMLParser
-import html
 
-poet = input('Enter a poet: ')
-poet = poet.lower()
-poet = re.sub('[^a-z]+','-',poet)
-url = "http://www.poetryfoundation.org/bio/"+poet+"#about"
 
-def getPoems(page):
+def get_poems(page):
     fileout = poet + ".txt"
-    output = open(fileout,'w')
-    soup = BeautifulSoup(page.read(),"html.parser")
-    parser = HTMLParser()
+    output = open(fileout, 'w')
+    soup = BeautifulSoup(page.read(), "html.parser")
 
-    poems = soup.find_all('a',href=re.compile('.*/poems/\d.*'))
-    usedTitles = []
+    poems = soup.find_all('a', href=re.compile('.*/poems/\d.*'))
+    used_titles = []
 
     for poem in poems:
-        poemURL = poem.get('href')
-        poemPage = urllib.request.urlopen(poemURL)
-        poemSoup = BeautifulSoup(poemPage.read(),"html.parser")
-        poemTitleTag = poemSoup.find('h1')
-        if poemTitleTag != None:
-            poemTitle = poemTitleTag.text.strip()
-            poemContent = poemSoup.find_all('div',{'style':"text-indent: -1em; padding-left: 1em;"})
-            titleOut = poemTitle
-            if poemTitle not in usedTitles:
-                usedTitles.append(poemTitle)
-                print(titleOut,file=output)
-                print("",file=output)
-                for line in poemContent:
-                    lineOut = line.text.strip()
-                    print(lineOut,file=output)
-                print("\n******\n",file=output)
+        poem_url = poem.get('href')
+        poem_page = urllib.request.urlopen(poem_url)
+        poem_soup = BeautifulSoup(poem_page.read(), "html.parser")
+        # Checks that this is a poem page (i.e., has a h1 title)
+        poem_title_tag = poem_soup.find('h1')
+
+        if poem_title_tag is not None:
+            poem_title = poem_title_tag.text.strip()
+            # Todo - This is picking up non-poem elements, is there a better indicator?
+            poem_content = poem_soup.find_all('div', {'style': "text-indent: -1em; padding-left: 1em;"})
+            title_out = poem_title
+
+            if poem_title not in used_titles:
+                used_titles.append(poem_title)
+                print(title_out + "\n", file=output)
+
+                # Remove any html tags
+                for line in poem_content:
+                    line_out = line.text.strip()
+                    print(line_out, file=output)
+
+                print("\n******\n", file=output)
+
+poet = input('Enter a poet: ').lower()
+poet = re.sub('[^a-z]+', '-', poet)
+url = "http://www.poetryfoundation.org/bio/" + poet + "#about"
 
 try:
-    page = urllib.request.urlopen(url)
-    getPoems(page)
-except:
-    print("Nothing found for that poet (or some other error)")
+    page_in = urllib.request.urlopen(url)
+    get_poems(page_in)
+except urllib.error.HTTPError:
+    print("Nothing found for that poet")
