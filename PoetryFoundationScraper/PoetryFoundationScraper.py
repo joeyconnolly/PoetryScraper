@@ -1,5 +1,3 @@
-# THIS IS STILL PICKING UP NOTES FROM WITHIN THE POEMS
-
 from bs4 import BeautifulSoup
 import re
 import urllib.request
