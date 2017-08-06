@@ -22,6 +22,12 @@ def get_poems(page):
 
         if poem_title_tag is not None:
             poem_title = poem_title_tag.text.strip()
+
+            # remove all annotations
+            annotations = poem_soup.find_all('span', id=re.compile('annotation\-\d\-text'))
+            for div in annotations:
+                div.decompose()
+
             # Todo - This is picking up non-poem elements, is there a better indicator?
             poem_content = poem_soup.find_all('div', {'style': "text-indent: -1em; padding-left: 1em;"})
             title_out = poem_title
@@ -29,7 +35,6 @@ def get_poems(page):
             if poem_title not in used_titles:
                 used_titles.append(poem_title)
                 print(title_out + "\n", file=output)
-
                 # Remove any html tags
                 for line in poem_content:
                     line_out = line.text.strip()
