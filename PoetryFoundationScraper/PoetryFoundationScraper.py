@@ -7,7 +7,7 @@ import urllib.request
 
 def get_poems(page):
     fileout = poet + ".txt"
-    output = open(fileout, 'w')
+    output = open(fileout, 'w', encoding="utf-8")
     soup = BeautifulSoup(page.read(), "html.parser")
 
     poems = soup.find_all('a', href=re.compile('.*/poems/\d.*'))
